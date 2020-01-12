@@ -16,9 +16,9 @@ class Grid:
         self.__goLeftTransition = (1 - pTransition) / 2
         self.__goRightTransition = (1 - pTransition) / 2
     
-    def actionWithMaxExpectedValue(self, state):
+    def actionWithMaxExpectedValue(self, state, argmax=False):
         actions = self.actions(state)
-        exptectedValues = []
+        exptectedValues = {}
 
         p = self.__goTransition
         pLeft = self.__goLeftTransition
@@ -34,15 +34,18 @@ class Grid:
                 return state
             return action
 
-        for action in actions:
+        for compass, action in actions.items():
 
             goAction = actionCheck(action, state)
             goLeftAction = actionCheck(self.probableState(state,action, "L"), state)
             goRightAction = actionCheck(self.probableState(state, action, "R"), state)
 
             expectedValue = p * u[goAction] + pLeft * u[goLeftAction] + pRight * u[goRightAction]
-            exptectedValues.append(expectedValue)
+            exptectedValues[expectedValue] = compass
 
+        if(argmax):
+            return exptectedValues[max(exptectedValues)] # Return one of them N,S,W,E
+            
         return max(exptectedValues)
 
     def actions(self, state):
@@ -54,7 +57,7 @@ class Grid:
         westAction = (stateX - 1, stateY)
         eastAction = (stateX + 1, stateY)
 
-        return [northAction, southAction, westAction, eastAction]
+        return {"N":northAction, "S":southAction, "W":westAction, "E":eastAction}
 
     def probableState(self, state, action, position):
         actionX, actionY = action

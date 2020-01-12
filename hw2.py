@@ -60,14 +60,27 @@ def valueIteration(grid, discountFactor, epsilon = 0, maxIter = -1):
 
     return uPrime
 
+def findPolicies(grid):
+    policyGrid = grid.deepcopy()
+    for state in policyGrid.getStates():
+        if(not (policyGrid.isTerminal(state) or policyGrid.isBlock(state))):
+                action = grid.actionWithMaxExpectedValue(state, argmax=True)
+                policyGrid[state] = action
+    return policyGrid
+
+# Incase of equality !!!!!! up, down, right, left
+
 # grid = createHomeworkGrid(r = -0.04, p = 0.8)
 
 
 # valueIterationResult = valueIteration(grid, discountFactor=1, maxIter=1)
 # print(valueIterationResult)
 
-grid = sampleGrid0()
+grid = sampleGrid0(r=-3)
 
 
-valueIterationResult = valueIteration(grid, discountFactor=1, maxIter=1000)
+valueIterationResult = valueIteration(grid, discountFactor=1, maxIter=100)
 print(valueIterationResult)
+
+policyGrid = findPolicies(valueIterationResult)
+print(policyGrid)
