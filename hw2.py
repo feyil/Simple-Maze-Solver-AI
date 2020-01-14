@@ -37,7 +37,6 @@ def sampleGrid0(r = -3, p = 0.8):
 
     return grid
 
-
 # Reference: AI TextBook Figure 17.4
 def valueIteration(grid, discountFactor, epsilon = 0, maxIter = -1):
     uPrime = grid.deepcopy()
@@ -61,22 +60,24 @@ def valueIteration(grid, discountFactor, epsilon = 0, maxIter = -1):
     return uPrime
 
 # Reference: AI TextBook Figure 17.7
-def policyIteration(policyGrid, discountFactor):
+def policyIteration(policyGrid, discountFactor, maxIter=20):
     u = policyGrid.zeroGridUtilities() # Deep copy with u=0
     pi = policyGrid.deepcopy()
+    
     count = 0
-
-    while(count != 100):
+    while(count != maxIter):
         u = policyEvaluation(pi, u, discountFactor)
-
+     
         for state in pi.getStates():
+
             if(not (u.isTerminal(state) or u.isBlock(state))):
                 givenAction = u.actions(state)[pi[state]]
                 
                 if(u.actionWithMaxExpectedValue(state) > u.expectedValueForAction(givenAction, state, u)):
                     pi[state] = u.actionWithMaxExpectedValue(state, argmax=True)
 
-        count += 1
+        count +=1
+
     return pi, u
 
 def policyEvaluation(pi, u, discountFactor):
@@ -129,7 +130,7 @@ def setPolicyToAll(grid, policy):
 grid = sampleGrid0(r = -3)
 setPolicyToAll(grid, "N")
 
-pi = policyIteration(grid, 1)
+pi = policyIteration(grid, 1, maxIter=100)
 
 print(grid)
 print(pi[0])

@@ -36,10 +36,17 @@ class Grid:
             expectedValue = self.expectedValueForAction(action, state, u)
             exptectedValues[expectedValue] = compass
 
+        maxExpectedValue = max(exptectedValues)
+
         if(argmax):
-            return exptectedValues[max(exptectedValues)] # Return one of them N,S,W,E
-            
-        return max(exptectedValues)
+            # Incase of equality, the preference order is up, down, right, left
+            preferenceList = ["N", "S", "E", "W"]
+
+            for preference in preferenceList:
+                if(exptectedValues[maxExpectedValue] == preference):
+                    return preference # Return one of them N,S,E,W
+ 
+        return maxExpectedValue
 
     def expectedValueForAction(self, givenAction, givenState, u):
         # Transition probabilities obtained
