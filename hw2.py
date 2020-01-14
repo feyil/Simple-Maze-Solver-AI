@@ -60,13 +60,52 @@ def valueIteration(grid, discountFactor, epsilon = 0, maxIter = -1):
 
     return uPrime
 
+# Reference: AI TextBook Figure 17.7
+def policyIteration(policyGrid, discountFactor):
+    u = policyGrid.zeroGridUtilities() # Deep copy with u=0
+    pi = policyGrid.deepcopy()
+    count = 0
+
+    while(count != 100):
+        u = policyEvaluation(pi, u, discountFactor)
+
+        for state in pi.getStates():
+            if(not (u.isTerminal(state) or u.isBlock(state))):
+                givenAction = u.actions(state)[pi[state]]
+                
+                if(u.actionWithMaxExpectedValue(state) > u.expectedValueForAction(givenAction, state, u)):
+                    pi[state] = u.actionWithMaxExpectedValue(state, argmax=True)
+
+        count += 1
+    return pi, u
+
+def policyEvaluation(pi, u, discountFactor):
+    uPrime = u.deepcopy()
+
+    for state in u.getStates():
+        if(not (uPrime.isTerminal(state) or uPrime.isBlock(state))):
+            givenAction = u.actions(state)[pi[state]]
+            uPrime[state] = u.rewardOf(state) + discountFactor * u.expectedValueForAction(givenAction, state, u)
+
+    return uPrime
+        
 def findPolicies(grid):
     policyGrid = grid.deepcopy()
+
     for state in policyGrid.getStates():
+
         if(not (policyGrid.isTerminal(state) or policyGrid.isBlock(state))):
+                # AI TextBook equation 17.4
                 action = grid.actionWithMaxExpectedValue(state, argmax=True)
+                
                 policyGrid[state] = action
+
     return policyGrid
+
+def setPolicyToAll(grid, policy):
+    for state in grid.getStates():
+        if(not (grid.isTerminal(state) or grid.isBlock(state))):
+            grid[state] = policy
 
 # Incase of equality !!!!!! up, down, right, left
 
@@ -76,11 +115,22 @@ def findPolicies(grid):
 # valueIterationResult = valueIteration(grid, discountFactor=1, maxIter=1)
 # print(valueIterationResult)
 
-grid = sampleGrid0(r=-3)
+# grid = sampleGrid0(r=-3)
 
 
-valueIterationResult = valueIteration(grid, discountFactor=1, maxIter=100)
-print(valueIterationResult)
+# valueIterationResult = valueIteration(grid, discountFactor=1, maxIter=100)
+# print(valueIterationResult)
 
-policyGrid = findPolicies(valueIterationResult)
-print(policyGrid)
+# policyGrid = findPolicies(valueIterationResult)
+# print(policyGrid)
+
+# print(policyGrid.zeroGridUtilities())
+
+grid = sampleGrid0(r = -3)
+setPolicyToAll(grid, "N")
+
+pi = policyIteration(grid, 1)
+
+print(grid)
+print(pi[0])
+print(pi[1])

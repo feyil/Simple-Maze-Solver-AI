@@ -15,38 +15,54 @@ class Grid:
         self.__goTransition = pTransition
         self.__goLeftTransition = (1 - pTransition) / 2
         self.__goRightTransition = (1 - pTransition) / 2
-    
+
+    def zeroGridUtilities(self):
+        zeroGrid = self.deepcopy()
+
+        for state in zeroGrid.getStates():
+            if(not (zeroGrid.isTerminal(state) or zeroGrid.isBlock(state))):
+                zeroGrid[state] = 0
+
+        return zeroGrid
+
     def actionWithMaxExpectedValue(self, state, argmax=False):
         actions = self.actions(state)
         exptectedValues = {}
 
-        p = self.__goTransition
-        pLeft = self.__goLeftTransition
-        pRight = self.__goRightTransition
-
         u = self.__grid
-
-        def actionCheck(action, state):
-            notValid = not self.isValid(action) # stay in same state
-            blocked = self.isBlock(action) # stay in same state 
-
-            if(notValid or blocked):
-                return state
-            return action
 
         for compass, action in actions.items():
 
-            goAction = actionCheck(action, state)
-            goLeftAction = actionCheck(self.probableState(state,action, "L"), state)
-            goRightAction = actionCheck(self.probableState(state, action, "R"), state)
-
-            expectedValue = p * u[goAction] + pLeft * u[goLeftAction] + pRight * u[goRightAction]
+            expectedValue = self.expectedValueForAction(action, state, u)
             exptectedValues[expectedValue] = compass
 
         if(argmax):
             return exptectedValues[max(exptectedValues)] # Return one of them N,S,W,E
             
         return max(exptectedValues)
+
+    def expectedValueForAction(self, givenAction, givenState, u):
+        # Transition probabilities obtained
+        p = self.__goTransition
+        pLeft = self.__goLeftTransition
+        pRight = self.__goRightTransition
+
+        # givenAction applied and result states obtained
+        goActionState = self.actionCheck(givenAction, givenState)
+        goLeftActionState = self.actionCheck(self.probableState(givenState,givenAction, "L"), givenState)
+        goRightActionState = self.actionCheck(self.probableState(givenState, givenAction, "R"), givenState)
+
+        expectedValue = p * u[goActionState] + pLeft * u[goLeftActionState] + pRight * u[goRightActionState]
+
+        return expectedValue
+
+    def actionCheck(self, action, state):
+        notValid = not self.isValid(action) # stay in same state
+        blocked = self.isBlock(action) # stay in same state 
+
+        if(notValid or blocked):
+            return state
+        return action
 
     def actions(self, state):
         stateX, stateY = state
