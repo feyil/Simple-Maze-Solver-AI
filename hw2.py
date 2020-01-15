@@ -1,4 +1,7 @@
+import numpy as np
+
 from grid import Grid
+
 
 def createHomeworkGrid(r = 0, p = 1):
     grid = Grid(4,4, reward=r, pTransition=p)
@@ -21,8 +24,8 @@ def createHomeworkGrid(r = 0, p = 1):
 
     return grid
 
-def sampleGrid0(r = -3, p = 0.8):
-    grid = Grid(4,3,reward=r,pTransition=p)
+def sampleGrid0(r = -3, p = 0.8, startState = (0,2)):
+    grid = Grid(4,3,reward=r,pTransition=p, startingState=startState)
 
     # Adding Terminals
     grid[(3,0)] = 100
@@ -108,30 +111,131 @@ def setPolicyToAll(grid, policy):
         if(not (grid.isTerminal(state) or grid.isBlock(state))):
             grid[state] = policy
 
-# Incase of equality !!!!!! up, down, right, left
+# Q-Learning imp
 
-# grid = createHomeworkGrid(r = -0.04, p = 0.8)
+# Reference: Recitation Slide Figure 11.10
+def qLearning(grid, discountFactor, learningRate, epsilon, maxIter=1):
+    q = initializeQ(grid, value=0) # Example Item q(s,a) -> q[((sx,sy),(ax,ay))]
+    state = grid.getStartingState()
+
+    count = 0 
+    while(count != maxIter):
+        action = decideToAction(grid, q, state, epsilon)
+        statePrime = grid.executeAction(state, action)
+  
+        q[(state,action)] = (1 - learningRate) * q[(state,action)] + learningRate * (grid.qRewardOf(statePrime) + qMax(q, statePrime))
+        state = statePrime
+        
+        if(grid.isTerminal(state)):
+            state = grid.getStartingState()
+
+        count += 1
+
+    return q
+
+def initializeQ(grid, value=0):
+    q = {}
+    actions = grid.actions((0,0)).keys() # ["N", "S", "W", "E"]
+
+    for state in grid.getStates():
+        for action in actions:
+            # q[((0,0), "W")]
+            q[(state, action)] = 0
+    return q
+        
+def decideToAction(grid, q, state, epsilon):
+    r = np.random.rand()
+
+    if(r < epsilon):
+        # Decide Exploration Direction
+        directions = ["N", "S", "W", "E"]   # [U, D, R, L] -> [N, S, W, E]
+        direction = np.random.randint(0,4)
+        
+        return directions[direction]
+    
+    return qMax(q, state, argMax=True)
+
+def qMax(q, state, argMax=False):
+    directions = ["N", "S", "W", "E"]
+    r = np.random.randint(0,4)
+    
+    # Selecting random max
+    argMaxStart = directions[r]
+    maxStart = q[(state, argMaxStart)]
+
+    for stateAction, qValue in q.items(): # stateAction = q[s,a] -> q[((sx,sy), "W")]
+        if(stateAction[0] == state and qValue > maxStart):
+            argMaxStart = stateAction[1]
+            maxStart = qValue
+
+    if(argMax == True):
+        return argMaxStart
+    return maxStart
+
+def qValueToUtilities(grid, q):
+    uGrid = grid.deepcopy()
+
+    for state in uGrid.getStates():
+        if(not (uGrid.isTerminal(state) or uGrid.isBlock(state))):
+            qValue = qMax(q, state, argMax=True)
+            s= qMax(q, state, argMax=False)
+            uGrid[state] = qValue
+
+    return uGrid
+
+    
+def main():
 
 
-# valueIterationResult = valueIteration(grid, discountFactor=1, maxIter=1)
-# print(valueIterationResult)
-
-# grid = sampleGrid0(r=-3)
+    # grid = createHomeworkGrid(r = -0.04, p = 0.8)
 
 
-# valueIterationResult = valueIteration(grid, discountFactor=1, maxIter=100)
-# print(valueIterationResult)
+    # valueIterationResult = valueIteration(grid, discountFactor=1, maxIter=1)
+    # print(valueIterationResult)
 
-# policyGrid = findPolicies(valueIterationResult)
-# print(policyGrid)
+    # grid = sampleGrid0(r=-3)
 
-# print(policyGrid.zeroGridUtilities())
 
-grid = sampleGrid0(r = -3)
-setPolicyToAll(grid, "N")
+    # valueIterationResult = valueIteration(grid, discountFactor=1, maxIter=100)
+    # print(valueIterationResult)
 
-pi = policyIteration(grid, 1, maxIter=100)
+    # policyGrid = findPolicies(valueIterationResult)
+    # print(policyGrid)
 
-print(grid)
-print(pi[0])
-print(pi[1])
+    # print(policyGrid.zeroGridUtilities())
+
+    grid = sampleGrid0(r = -3, startState=(3,2))
+    # setPolicyToAll(grid, "N")
+
+    # pi = policyIteration(grid, 1, maxIter=100000)
+    # print(pi[0])
+
+    # q
+
+
+
+    print(grid)
+    # print(pi[0])
+    # print(pi[1])
+    np.random.seed(62)
+
+
+    # for i in range(50):
+    #     print(grid.executeAction((0,0), "W"))
+
+    q = initializeQ(grid)
+    a = len(q.keys())
+    print(a)
+    print(q[((0,0), "S")])
+    q[((0,0), "S")] = 10
+
+    q = qLearning(grid, 0.8, 0.1, 0.4, maxIter=100000)
+    print(q)
+    state = qMax(q,(0,0),argMax=True)
+    print(state)
+    uGrid = qValueToUtilities(grid, q)
+    print(uGrid)
+    # armaxq policy
+    # print(policy)
+
+main()

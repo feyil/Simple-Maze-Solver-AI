@@ -1,9 +1,10 @@
 import copy
 import math
+import numpy as np
 
 class Grid:
 
-    def __init__(self, xGrid, yGrid,reward = 0, uValue = 0, pTransition = 1):
+    def __init__(self, xGrid, yGrid,reward = 0, uValue = 0, pTransition = 1, startingState = (0,0)):
         self.__grid = self.createGrid(xGrid, yGrid, uValue)
         self.__teriminalStates = []
 
@@ -15,6 +16,27 @@ class Grid:
         self.__goTransition = pTransition
         self.__goLeftTransition = (1 - pTransition) / 2
         self.__goRightTransition = (1 - pTransition) / 2
+
+        self.__startingState = startingState
+    
+    def executeAction(self, state, action):
+        # Decide Result of an Action
+        r = np.random.rand()
+
+        actions = self.actions(state)
+
+        if(r < 0.8):
+            # straight
+            return self.actionCheck(actions[action], state)
+        elif(r <= 0.9):
+            # left
+            return self.actionCheck(self.probableState(state, actions[action], "L"), state)
+        elif(r <= 1.0):
+            # right
+            return self.actionCheck(self.probableState(state, actions[action], "R"), state)
+
+    def getStartingState(self):
+        return self.__startingState
 
     def zeroGridUtilities(self):
         zeroGrid = self.deepcopy()
@@ -109,6 +131,11 @@ class Grid:
         return self.__grid.keys()
 
     def rewardOf(self, state):
+        return self.__reward
+
+    def qRewardOf(self, state):
+        if(self.isTerminal(state)):
+            return self[state]
         return self.__reward
 
     def createGrid(self, xGrid, yGrid, uValue):
