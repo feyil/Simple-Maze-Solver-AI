@@ -60,13 +60,16 @@ def qMax(q, state, argMax=False):
         return argMaxStart
     return maxStart
 
-def qValueToUtilities(grid, q):
+def qValueTo(grid, q):
     uGrid = grid.deepcopy()
+    pGrid = grid.deepcopy()
 
     for state in uGrid.getStates():
         if(not (uGrid.isTerminal(state) or uGrid.isBlock(state))):
-            qValue = qMax(q, state, argMax=True)
-            s= qMax(q, state, argMax=False)
+            qValue = qMax(q, state, argMax=False)
             uGrid[state] = qValue
-
-    return uGrid
+            
+            qPolicy = qMax(q, state, argMax=True)
+            pGrid[state] = qPolicy
+            
+    return pGrid, uGrid
