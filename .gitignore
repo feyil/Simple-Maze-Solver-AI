@@ -1,3 +1,4 @@
 .vscode
 *.pyc
 __pycache__
+__pycache__/grid.cpython-36.pyc
