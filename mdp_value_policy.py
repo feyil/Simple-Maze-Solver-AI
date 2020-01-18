@@ -1,7 +1,7 @@
 from grid import Grid
 
 # Reference: AI TextBook Figure 17.4
-def valueIteration(grid, discountFactor, epsilon = 0, maxIter = -1):
+def valueIteration(grid, discountFactor, epsilon = 0, maxIter = 0):
     uPrime = grid.deepcopy()
     u = None
     delta, iteration = 0, 0
@@ -16,7 +16,7 @@ def valueIteration(grid, discountFactor, epsilon = 0, maxIter = -1):
                 if(not (uPrime.isTerminal(state) or uPrime.isBlock(state))):
                     uPrime[state] = u.rewardOf(state) + discountFactor * u.actionWithMaxExpectedValue(state)
                 
-                    if(abs(uPrime[state] - u[state] > delta)):
+                    if(abs(uPrime[state] - u[state]) > delta):
                         delta = abs(uPrime[state] - u[state])
             iteration += 1
 
