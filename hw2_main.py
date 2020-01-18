@@ -79,13 +79,13 @@ def main_test():
     
     q = qLearning(grid, discountFactor=0.8, learningRate=0.1, epsilon=0.4, maxIter=100000)
 
-    puGrid = qValueTo(grid, q)
+    puGrid = qValueTo(grid, q[0])
     print(puGrid[0]) # Policy argmaxQ
     print(puGrid[1]) # Utility maxQ
 
     print("<<Q-learning Calculations Finished>>\n")
 
-def main_hw(VI, PI, QL, startingState, reward, discountFactor, learningRate, epsilon, probability, N, decay=False):
+def main_hw(VI, PI, QL, startingState, reward, discountFactor, learningRate, epsilon, probability, N, decay=False, log=False):
     
     # Grid Creation
     print("<<Grid Generated>>\n")
@@ -97,7 +97,7 @@ def main_hw(VI, PI, QL, startingState, reward, discountFactor, learningRate, eps
         print("<<Value Iteration Calculations Started>>\n")
         print(grid)
 
-        valueIterationResult = valueIteration(grid, discountFactor=discountFactor, maxIter=N)
+        valueIterationResult = valueIteration(grid, discountFactor=discountFactor, maxIter=N, log=log)
         print(valueIterationResult)
 
         policyGrid = findPolicies(valueIterationResult)
@@ -113,7 +113,7 @@ def main_hw(VI, PI, QL, startingState, reward, discountFactor, learningRate, eps
         iterationGrid = grid.zeroGridUtilities()
         setPolicyToAll(iterationGrid, "N") # N->North->Up
 
-        pi = policyIteration(iterationGrid, discountFactor=discountFactor, maxIter=N)
+        pi = policyIteration(iterationGrid, discountFactor=discountFactor, maxIter=N, log=log)
         print(pi[0]) # pi
         print(pi[1]) # utilities
 
@@ -126,14 +126,26 @@ def main_hw(VI, PI, QL, startingState, reward, discountFactor, learningRate, eps
 
         grid.setStartingState((0,2))
         
-        q = qLearning(grid, discountFactor=discountFactor, learningRate=learningRate, epsilon=epsilon, maxIter=N, decay=decay)
-
-        puGrid = qValueTo(grid, q)
+        q = qLearning(grid, discountFactor=discountFactor, learningRate=learningRate, epsilon=epsilon, maxIter=N, decay=decay, log=log)
+       
+        puGrid = qValueTo(grid, q[0])
         print(puGrid[0]) # Policy argmaxQ
         print(puGrid[1]) # Utility maxQ
 
-        print("<<Q-learning Calculations Finished>>\n")
+        # Plot policy and utility errors
+        if(log):
+            print("->Q-Value Matrix:\n")
+            print(q[0])
 
+            # Find reference policy iteration result
+            iterationGrid = grid.zeroGridUtilities()
+            setPolicyToAll(iterationGrid, "N") # N->North->Up
+            pi = policyIteration(iterationGrid, discountFactor=discountFactor, maxIter=1000, log=False)
+
+            logList = q[1]
+            plotErrors(grid, logList, pi)
+                
+        print("<<Q-learning Calculations Finished>>\n")
 
 np.random.seed(62)
 
@@ -336,10 +348,11 @@ parameters3evii = {
     "discountFactor": 0.9,  # d
     "probability": 0.8,     # p
     "learningRate": 1,      # a
-    "epsilon": 0.1,         # e
+    "epsilon": 0.3,         # e
     "N": 100000,             # N
-    "decay": True
+    "decay": True,
+    "log": False
 }
 
-main_hw(**parameters3ev)
+main_hw(**parameters3evii)
 
