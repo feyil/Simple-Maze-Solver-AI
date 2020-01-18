@@ -2,8 +2,9 @@ import numpy as np
 from grid import Grid
 
 # Reference: Recitation Slide Figure 11.10
-def qLearning(grid, discountFactor, learningRate, epsilon, maxIter=1):
+def qLearning(grid, discountFactor, learningRate, epsilon, maxIter=1, decay=False):
     q = initializeQ(grid, value=0) # Example Item q(s,a) -> q[((sx,sy),(ax,ay))]
+    qCount = initializeQ(grid, value=0) # For decaying
     state = grid.getStartingState()
 
     count = 0 
@@ -11,8 +12,16 @@ def qLearning(grid, discountFactor, learningRate, epsilon, maxIter=1):
         action = decideToAction(grid, q, state, epsilon)
         statePrime = grid.executeAction(state, action)
   
+        if(decay):
+            # Increment experience counter
+            qCount[(state,action)] += 1
+
+            # decaying learning rate
+            learningRate = 1 / qCount[(state, action)]
+
         q[(state,action)] = (1 - learningRate) * q[(state,action)] + learningRate * (grid.qRewardOf(statePrime) + qMax(q, statePrime))
         state = statePrime
+
         
         if(grid.isTerminal(state)):
             state = grid.getStartingState()
