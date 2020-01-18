@@ -35,6 +35,9 @@ class Grid:
             # right
             return self.actionCheck(self.probableState(state, actions[action], "R"), state)
 
+    def setStartingState(self, state):
+        self.__startingState = state
+
     def getStartingState(self):
         return self.__startingState
 
