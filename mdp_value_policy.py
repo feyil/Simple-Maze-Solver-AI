@@ -1,7 +1,7 @@
 from grid import Grid
 
 # Reference: AI TextBook Figure 17.4
-def valueIteration(grid, discountFactor, epsilon = 0, maxIter = 0):
+def valueIteration(grid, discountFactor, epsilon = 0, maxIter = 0, log=False):
     uPrime = grid.deepcopy()
     u = None
     delta, iteration = 0, 0
@@ -19,11 +19,14 @@ def valueIteration(grid, discountFactor, epsilon = 0, maxIter = 0):
                     if(abs(uPrime[state] - u[state]) > delta):
                         delta = abs(uPrime[state] - u[state])
             iteration += 1
+            if(log):
+                print("->Iteration {}\n".format(iteration))
+                print(u)
 
     return uPrime
 
 # Reference: AI TextBook Figure 17.7
-def policyIteration(policyGrid, discountFactor, maxIter=20):
+def policyIteration(policyGrid, discountFactor, maxIter=20, log=False):
     u = policyGrid.zeroGridUtilities() # Deep copy with u=0
     pi = policyGrid.deepcopy()
     
@@ -40,6 +43,10 @@ def policyIteration(policyGrid, discountFactor, maxIter=20):
                     pi[state] = u.actionWithMaxExpectedValue(state, argmax=True)
 
         count +=1
+
+        if(log):
+            print("->Iteration {}\n".format(count))
+            print(u)
 
     return pi, u
 
