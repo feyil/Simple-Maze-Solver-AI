@@ -47,6 +47,7 @@ def policyIteration(policyGrid, discountFactor, maxIter=20, log=False):
         if(log):
             print("->Iteration {}\n".format(count))
             print(u)
+            print(pi)
 
     return pi, u
 

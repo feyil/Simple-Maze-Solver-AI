@@ -162,7 +162,8 @@ parameters1a = {
     "probability": 1,       # p
     "learningRate": 0.1,    # a
     "epsilon": 0.1,         # e
-    "N": 1               # N
+    "N": 8,               # N
+    "log":True
 }
 
 # 1b-With ​ e:0​ , ​ a:0.1​ and ​ N:1000​ , after Q-learning
@@ -176,7 +177,8 @@ parameters1b = {
     "probability": 1,       # p
     "learningRate": 0.1,    # a
     "epsilon": 0,           # e
-    "N": 1000               # N
+    "N": 1000,               # N
+    "log": True
 }
 
 # 2a-Now, run the same experiments this time with ​ r:-0.01​ .
@@ -190,7 +192,8 @@ parameters2a = {
     "probability": 1,       # p
     "learningRate": 0.1,    # a
     "epsilon": 0,           # e
-    "N": 1000               # N
+    "N": 1000,               # N
+    "log": False
 }
 
 # 2b-Update the discount factor as ​ d:0.2​
@@ -218,7 +221,8 @@ parameters2c = {
     "probability": 1,       # p
     "learningRate": 0.1,    # a
     "epsilon": 0,           # e
-    "N": 1000               # N
+    "N": 1000,               # N
+    "log": False
 }
 
 # 2d-Try VI and PI with ​ d:1​ , ​ r:-0.01​ and ​ p:0.5​ .
@@ -232,7 +236,8 @@ parameters2d = {
     "probability": 0.5,     # p
     "learningRate": 0.1,    # a
     "epsilon": 0,           # e
-    "N": 1000               # N
+    "N": 1000,               # N
+    "log": False
 }
 
 # 3e-Run you experiments with ​ d:0.9​ , ​ r:-0.01​ , ​ p:0.8​ for VI and PI.
@@ -260,7 +265,8 @@ parameters3ei = {
     "probability": 0.8,     # p
     "learningRate": 0.1,    # a
     "epsilon": 0,           # e
-    "N": 1000               # N
+    "N": 1000,               # N
+    "log": True
 }
 
 # 3eii-What happens if you increase ​ N:10000​ ?
@@ -274,7 +280,8 @@ parameters3eii = {
     "probability": 0.8,     # p
     "learningRate": 0.1,    # a
     "epsilon": 0,           # e
-    "N": 10000              # N
+    "N": 10000,              # N
+    "log": True
 }
 
 # 3eiii-Now let’s introduce some exploration possibility for the agent, ​ e:0.1​ .
@@ -288,7 +295,8 @@ parameters3eiii = {
     "probability": 0.8,     # p
     "learningRate": 0.1,    # a
     "epsilon": 0.1,         # e
-    "N": 10000              # N
+    "N": 10000,              # N
+    "log": True
 }
 
 # 3eiv-Now let’s examine the learning rate. How does the performance change if we update it as ​ a:1​ ?
@@ -302,7 +310,8 @@ parameters3eiv = {
     "probability": 0.8,     # p
     "learningRate": 1,      # a
     "epsilon": 0.1,         # e
-    "N": 10000              # N
+    "N": 10000,              # N
+    "log":True
 }
 
 # 3ev-Implement a counter for each state-action pair and increment it everytime that pair is
@@ -318,7 +327,8 @@ parameters3ev = {
     "learningRate": 1,      # a
     "epsilon": 0.1,         # e
     "N": 10000,             # N
-    "decay": True
+    "decay": True,
+    "log": True
 }
 
 # 3evi-Finally let’s increase the number of experiments ​ N:100000 ​ (with ​ e:0.1​ and ​ decaying
@@ -334,22 +344,23 @@ parameters3evi = {
     "learningRate": 1,      # a
     "epsilon": 0.1,         # e
     "N": 100000,             # N
-    "decay": True
+    "decay": True,
+    "log": True
 }
 
 # 3evii-What is the best parameter set you can come up with, that reach the optimal policy
 # in least number of iterations?
 parameters3evii = {
-    "VI": 0, # 1->to activate, 0->to deactivate
-    "PI": 0, # 1->to activate, 0->to deactivate
+    "VI": 1, # 1->to activate, 0->to deactivate
+    "PI": 1, # 1->to activate, 0->to deactivate
     "QL": 1, # 1->to activate, 0->to deactivate
     "startingState": (0,2),
     "reward": -0.01,        # r
     "discountFactor": 0.9,  # d
     "probability": 0.8,     # p
-    "learningRate": 1,      # a
-    "epsilon": 0.3,         # e
-    "N": 100000,             # N
+    "learningRate": 0.1,      # a
+    "epsilon": 0.4,         # e
+    "N": 10000,             # N
     "decay": True,
     "log": False
 }
