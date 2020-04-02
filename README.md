@@ -1,4 +1,4 @@
-# Simle Maze Solver AI
+# Simple Maze Solver AI
 
 ### Introduction
 
